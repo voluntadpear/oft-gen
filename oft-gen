@@ -1,0 +1,3 @@
+#!/bin/bash
+
+deno run --allow-env="NODE_DEBUG" --allow-net=api.notion.com --allow-read="./config.json" mod.ts   
