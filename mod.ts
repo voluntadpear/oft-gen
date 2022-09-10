@@ -20,7 +20,7 @@ async function generateMessage() {
   const slackMsg = formatOFTMessage(tasksMetadata);
   console.log(slackMsg);
   writeTextToClipboard(slackMsg);
-  console.log("Message copied to clipboard.");
+  console.log("\nMessage copied to clipboard.");
 }
 
 generateMessage();
