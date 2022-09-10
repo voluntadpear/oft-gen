@@ -1,4 +1,4 @@
-import { Client } from "./deps.ts";
+import { Client, writeTextToClipboard } from "./deps.ts";
 import type { PageObjectResponse, QueryDatabaseResponse } from "./deps.ts";
 
 import { TaskMetadata } from "./types.ts";
@@ -15,6 +15,8 @@ async function generateMessage() {
   const tasksMetadata = extractFromTasks(completedTasks);
   const slackMsg = formatOFTMessage(tasksMetadata);
   console.log(slackMsg);
+  writeTextToClipboard(slackMsg);
+  console.log("Message copied to clipboard.");
 }
 
 function readLocalConfig(): { key: string; databaseId: string } {
@@ -44,9 +46,9 @@ function formatOFTMessage(tasks: TaskMetadata[]) {
   const template = `*Out for Today:*\n`;
   const bullets = tasks
     .map((task) => {
-      const base = `• ${task.name}`;
+      const base = `•  ${task.name}`;
       if (task.url) {
-        return `${base}\n\t• [${prettifyHost(task.url)}](${task.url})`;
+        return `${base}\n\t•  [${prettifyHost(task.url)}](${task.url})`;
       }
       return base;
     })
