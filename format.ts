@@ -18,21 +18,25 @@ export function formatOFTMessage(tasks: TaskMetadata[]) {
 
 type Provider = "GitHub" | "Google Docs" | "Zendesk" | "Notion";
 const originsMap: Record<string, Provider> = {
-  "https://github.com": "GitHub",
-  "https://docs.google.com": "Google Docs",
-  "https://zendesk.com": "Zendesk",
-  "https://notion.so": "Notion",
-  "https://www.notion.so": "Notion",
+  "github.com": "GitHub",
+  "google.com": "Google Docs",
+  "zendesk.com": "Zendesk",
+  "notion.so": "Notion",
 };
 
 function prettifyHost(url: string) {
   const parsedURL = new URL(url);
-  const match = originsMap[parsedURL.origin];
+  const keys = Object.keys(originsMap);
+  const match = keys.find((providerKey) =>
+    parsedURL.origin.includes(providerKey)
+  );
   if (!match) {
     return "Link";
   }
 
-  if (match === "GitHub") {
+  const matchedValue = originsMap[match];
+
+  if (matchedValue === "GitHub") {
     // Custom logic for both PRs and issues
     if (parsedURL.pathname.includes("/pull/")) {
       const prNumberRegex = /\/pull\/(?<prNumber>[0-9]+)/;
@@ -47,12 +51,12 @@ function prettifyHost(url: string) {
     }
     return "GitHub";
   }
-  if (match === "Zendesk") {
+  if (matchedValue === "Zendesk") {
     const ticketRegex = /\/tickets\/(?<ticket>[0-9]+)/;
     const regexMatch = parsedURL.pathname.match(ticketRegex);
     const ticket = regexMatch?.groups?.ticket;
     return ticket ? `Zendesk ticket #${ticket}` : "Zendesk";
   }
 
-  return match;
+  return matchedValue;
 }
