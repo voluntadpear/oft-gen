@@ -1,8 +1,5 @@
-import { Client } from "https://esm.sh/@notionhq/client@2.2.0";
-import {
-  PageObjectResponse,
-  QueryDatabaseResponse,
-} from "https://esm.sh/v94/@notionhq/client@2.2.0/build/src/api-endpoints.d.ts";
+import { Client } from "./deps.ts";
+import type { PageObjectResponse, QueryDatabaseResponse } from "./deps.ts";
 
 import { TaskMetadata } from "./types.ts";
 
