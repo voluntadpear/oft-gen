@@ -6,16 +6,41 @@ import {
 
 import { TaskMetadata } from "./types.ts";
 
-const notion = new Client({ auth: Deno.env.get("NOTION_KEY") });
-
-const databaseId = Deno.env.get("NOTION_DATABASE_ID");
-
 async function generateMessage() {
-  const completedStatuses = await getCompletedOptions();
-  const completedTasks = await getCompletedTasks(completedStatuses);
+  const { key, databaseId } = readLocalConfig();
+  const notion = new Client({ auth: key });
+  const completedStatuses = await getCompletedOptions(notion, databaseId);
+  const completedTasks = await getCompletedTasks(
+    notion,
+    databaseId,
+    completedStatuses
+  );
   const tasksMetadata = extractFromTasks(completedTasks);
   const slackMsg = formatOFTMessage(tasksMetadata);
   console.log(slackMsg);
+}
+
+function readLocalConfig(): { key: string; databaseId: string } {
+  const config = Deno.readTextFileSync("./config.json");
+  const parsedConfig = JSON.parse(config);
+
+  if (!parsedConfig.notion) {
+    throw new Error('You must specify a config.json file with a "notion" key');
+  }
+  if (!parsedConfig.notion.key) {
+    throw new Error('The "notion.key" value was not found on the config.json.');
+  }
+
+  if (!parsedConfig.notion.databaseId) {
+    throw new Error(
+      'The "notion.databaseId" value was not found on the config.json.'
+    );
+  }
+
+  return {
+    key: parsedConfig.notion.key as string,
+    databaseId: parsedConfig.notion.databaseId as string,
+  };
 }
 
 function formatOFTMessage(tasks: TaskMetadata[]) {
@@ -34,8 +59,7 @@ function formatOFTMessage(tasks: TaskMetadata[]) {
   return output;
 }
 
-async function getCompletedOptions() {
-  assert(databaseId);
+async function getCompletedOptions(notion: Client, databaseId: string) {
   const db = await notion.databases.retrieve({ database_id: databaseId });
   const statusGroups = db.properties.Status;
   assert(statusGroups.type === "status");
@@ -48,8 +72,12 @@ async function getCompletedOptions() {
     .map((option) => option.name);
 }
 
-async function getCompletedTasks(completedStatuses: string[]) {
-  assert(databaseId);
+async function getCompletedTasks(
+  notion: Client,
+  databaseId: string,
+  completedStatuses: string[]
+) {
+  assert(!!databaseId);
 
   const dbPages = await notion.databases.query({
     database_id: databaseId,
@@ -70,7 +98,7 @@ function extractFromTasks(tasks: QueryDatabaseResponse): TaskMetadata[] {
   ) as PageObjectResponse[];
 
   return filteredResults.map((result) => {
-    assert(result.properties.Name);
+    assert(!!result.properties.Name);
     let name = "";
     let url = "";
 
@@ -131,7 +159,7 @@ function prettifyHost(url: string) {
   return match;
 }
 
-function assert(condition: any, msg?: string): asserts condition {
+function assert(condition: boolean, msg?: string): asserts condition {
   if (!condition) {
     throw new Error(msg);
   }
