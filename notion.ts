@@ -70,7 +70,7 @@ export async function getCompletedTasks(
 export function extractFromTasks(
   tasks: QueryDatabaseResponse,
   titleProp: string,
-  linkPropName: string | null
+  linkPropName: string | undefined
 ): TaskMetadata[] {
   const filteredResults = tasks.results.filter(
     (task) => "parent" in task

@@ -23,9 +23,8 @@ async function generateMessage() {
   );
   const tasksMetadata = extractFromTasks(completedTasks, titleProp, linkProp);
   const slackMsg = formatOFTMessage(tasksMetadata);
-  console.log(slackMsg);
   writeTextToClipboard(slackMsg);
-  console.log("\nMessage copied to clipboard.");
+  console.log("Out for Today message copied to clipboard.");
 }
 
 generateMessage();
