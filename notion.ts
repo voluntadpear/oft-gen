@@ -8,9 +8,7 @@ export async function getPropsFromDB(notion: Client, databaseId: string) {
   const titleProp = Object.values(db.properties).find(
     (value) => value.type === "title"
   );
-  if (!titleProp) {
-    throw new Error();
-  }
+
   assert(
     titleProp != null && titleProp.type === "title",
     'Some property of type "title" is required.'

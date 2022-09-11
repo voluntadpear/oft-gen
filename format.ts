@@ -1,4 +1,4 @@
-import { TaskMetadata } from "./types.ts";
+import { Category, Provider, TaskMetadata } from "./types.ts";
 
 const emojisMap: Record<Category, string> = {
   Doc: "📄",
@@ -32,15 +32,12 @@ export function formatOFTMessage(tasks: TaskMetadata[]) {
   return output;
 }
 
-type Provider = "GitHub" | "Google Docs" | "Zendesk" | "Notion";
 const originsMap: Record<string, Provider> = {
   "github.com": "GitHub",
   "google.com": "Google Docs",
   "zendesk.com": "Zendesk",
   "notion.so": "Notion",
 };
-
-type Category = "PR" | "Issue" | "Support" | "Doc" | "Other";
 
 function categorizeItem(url: string): {
   linkText: string | null;
