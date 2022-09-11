@@ -1,12 +1,28 @@
 import { TaskMetadata } from "./types.ts";
 
+const emojisMap: Record<Category, string> = {
+  Doc: "📄",
+  Issue: "🔦",
+  PR: "💡",
+  Support: "⚙️",
+  Other: "✅",
+};
+
 export function formatOFTMessage(tasks: TaskMetadata[]) {
   const template = `*Out for Today:*\n`;
   const bullets = tasks
     .map((task) => {
-      const base = `•  ${task.name}`;
+      let linkText: string | null = null;
+      let category: Category = "Other";
+
       if (task.url) {
-        return `${base}\n\t•  [${prettifyHost(task.url)}](${task.url})`;
+        const metadata = categorizeItem(task.url);
+        linkText = metadata.linkText;
+        category = metadata.category;
+      }
+      const base = `•  ${emojisMap[category]} ${task.name}`;
+      if (linkText) {
+        return `${base} → [${linkText}](${task.url})`;
       }
       return base;
     })
@@ -24,14 +40,19 @@ const originsMap: Record<string, Provider> = {
   "notion.so": "Notion",
 };
 
-function prettifyHost(url: string) {
+type Category = "PR" | "Issue" | "Support" | "Doc" | "Other";
+
+function categorizeItem(url: string): {
+  linkText: string | null;
+  category: Category;
+} {
   const parsedURL = new URL(url);
   const keys = Object.keys(originsMap);
   const match = keys.find((providerKey) =>
     parsedURL.origin.includes(providerKey)
   );
   if (!match) {
-    return "Link";
+    return { linkText: "Link", category: "Other" };
   }
 
   const matchedValue = originsMap[match];
@@ -42,21 +63,36 @@ function prettifyHost(url: string) {
       const prNumberRegex = /\/pull\/(?<prNumber>[0-9]+)/;
       const regexMatch = parsedURL.pathname.match(prNumberRegex);
       const prNumber = regexMatch?.groups?.prNumber;
-      return `GitHub PR${prNumber ? ` #${prNumber}` : ""}`;
+      return {
+        linkText: `GitHub PR${prNumber ? ` #${prNumber}` : ""}`,
+        category: "PR",
+      };
     } else if (parsedURL.pathname.includes("/issues")) {
       const issueRegex = /\/issues\/(?<issue>[0-9]+)/;
       const regexMatch = parsedURL.pathname.match(issueRegex);
       const issue = regexMatch?.groups?.issue;
-      return `GitHub issue${issue ? ` #${issue}` : ""}`;
+      return {
+        linkText: `GitHub issue${issue ? ` #${issue}` : ""}`,
+        category: "Issue",
+      };
     }
-    return "GitHub";
+    return { linkText: "GitHub", category: "Other" };
   }
   if (matchedValue === "Zendesk") {
     const ticketRegex = /\/tickets\/(?<ticket>[0-9]+)/;
     const regexMatch = parsedURL.pathname.match(ticketRegex);
     const ticket = regexMatch?.groups?.ticket;
-    return ticket ? `Zendesk ticket #${ticket}` : "Zendesk";
+    return ticket
+      ? { linkText: `Zendesk ticket #${ticket}`, category: "Support" }
+      : { linkText: "Zendesk", category: "Other" };
   }
 
-  return matchedValue;
+  if (matchedValue === "Notion") {
+    return { linkText: matchedValue, category: "Doc" };
+  }
+  if (matchedValue === "Google Docs") {
+    return { linkText: matchedValue, category: "Doc" };
+  }
+
+  return { linkText: matchedValue, category: "Other" };
 }
