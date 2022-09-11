@@ -4,13 +4,15 @@
 <p>Generate "Out for Today" messages from Notion To-Dos boards
 </div>
 
+---
+
+![CI pipeline][build-badge]![MIT License][license-badge]
+
 ## Overview
 
 At work we have the tradition to post a brief summary of the tasks each team member worked on during the day.
 
 Lately, I've been using Notion to handle my personal list of tasks in a prioritized a manageable way. So, that's how this tool was born.
-
-![CI pipeline](https://github.com/voluntadpear/oft-gen/actions/workflows/pipeline.yml/badge.svg)
 
 ## Usage
 
@@ -31,3 +33,6 @@ https://www.notion.so/myworkspace/a8aec43384f447ed84390e8e42c2e089?v=...
 9. Run `./oft-gen`
 
 After following these steps, the "Out for Today" message should be copied into your clipboard and ready to be pasted on Slack.
+
+[build-badge]: https://github.com/voluntadpear/oft-gen/actions/workflows/pipeline.yml/badge.svg
+[license-badge]: https://img.shields.io/npm/l/mdx-bundler.svg?style=flat-square
