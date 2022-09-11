@@ -10,13 +10,17 @@ import {
 async function generateMessage() {
   const { key, databaseId } = readLocalConfig();
   const notion = new Client({ auth: key });
-  const completedStatuses = await getCompletedOptions(notion, databaseId);
+  const {
+    titleProp,
+    statusProp: [statusPropKey, completedStatuses],
+  } = await getCompletedOptions(notion, databaseId);
   const completedTasks = await getCompletedTasks(
     notion,
     databaseId,
+    statusPropKey,
     completedStatuses
   );
-  const tasksMetadata = extractFromTasks(completedTasks);
+  const tasksMetadata = extractFromTasks(completedTasks, titleProp);
   const slackMsg = formatOFTMessage(tasksMetadata);
   console.log(slackMsg);
   writeTextToClipboard(slackMsg);
