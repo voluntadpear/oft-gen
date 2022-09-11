@@ -1,0 +1,13 @@
+export const snapshot = {};
+
+snapshot[`format message 1`] = `
+"*Out for Today:*
+•  ✅ Task 1
+•  💡 Task 2 → [GitHub PR #190](https://github.com/my-account/my-repo/pull/190)
+•  📄 Task 3 → [Google Docs](https://docs.google.com/document/d/dfgokkjlsdf23453245blahblah/edit)
+•  ⚙️ Task 4 with a longer description → [Zendesk ticket #341](https://myorg.zendesk.com/agent/tickets/341)
+•  ✅ Task 5 → [Zendesk](https://myorg.zendesk.com/agent/filters/32311)
+•  📄 Task 6 → [Notion](https://www.notion.so/abcdefoo)
+•  ✅ Task 7 → [GitHub](https://github.com/orgs/myorg/projects/99)
+•  🔦 Task 8 → [GitHub issue #991](https://github.com/myorg/myrepo/issues/991)"
+`;
