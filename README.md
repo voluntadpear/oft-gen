@@ -10,6 +10,8 @@ At work we have the tradition to post a brief summary of the tasks each team mem
 
 Lately, I've been using Notion to handle my personal list of tasks in a prioritized a manageable way. So, that's how this tool was born.
 
+![CI pipeline](https://github.com/voluntadpear/oft-gen/actions/workflows/pipeline.yml/badge.svg)
+
 ## Usage
 
 1. Make sure that you have [Deno](https://deno.land/#installation) installed in your system.
