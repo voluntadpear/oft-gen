@@ -54,7 +54,7 @@ export function extractFromTasks(tasks: QueryDatabaseResponse): TaskMetadata[] {
     }
 
     const linkProp = result.properties.Link;
-    if (linkProp.type === "url") {
+    if (linkProp?.type === "url") {
       url = linkProp.url ?? "";
     }
 
