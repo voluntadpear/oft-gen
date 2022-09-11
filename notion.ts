@@ -3,7 +3,7 @@ import { assert, TaskMetadata } from "./types.ts";
 
 import type { PageObjectResponse, QueryDatabaseResponse } from "./deps.ts";
 
-export async function getCompletedOptions(notion: Client, databaseId: string) {
+export async function getPropsFromDB(notion: Client, databaseId: string) {
   const db = await notion.databases.retrieve({ database_id: databaseId });
   const titleProp = Object.values(db.properties).find(
     (value) => value.type === "title"
@@ -28,8 +28,15 @@ export async function getCompletedOptions(notion: Client, databaseId: string) {
     (group) => group.name === "Complete"
   );
 
+  const linkProp = Object.values(db.properties).find(
+    (value) => value.type === "url"
+  );
+
+  assert(linkProp == null || linkProp.type === "url");
+
   return {
     titleProp: titleProp.name,
+    linkProp: linkProp?.name,
     statusProp: [
       statusProp.name,
       statusProp.status.options
@@ -62,7 +69,8 @@ export async function getCompletedTasks(
 
 export function extractFromTasks(
   tasks: QueryDatabaseResponse,
-  titleProp: string
+  titleProp: string,
+  linkPropName: string | null
 ): TaskMetadata[] {
   const filteredResults = tasks.results.filter(
     (task) => "parent" in task
@@ -73,16 +81,18 @@ export function extractFromTasks(
     let name = "";
     let url = "";
 
-    const nameProp = result.properties.Name;
+    const nameProp = result.properties[titleProp];
     if (nameProp.type === "title") {
       if (nameProp.title[0].type === "text") {
         name = nameProp.title[0].text.content;
       }
     }
 
-    const linkProp = result.properties.Link;
-    if (linkProp?.type === "url") {
-      url = linkProp.url ?? "";
+    if (linkPropName) {
+      const linkProp = result.properties[linkPropName];
+      if (linkProp?.type === "url") {
+        url = linkProp.url ?? "";
+      }
     }
 
     return { name, url: url || null };

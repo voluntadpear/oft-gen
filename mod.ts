@@ -3,7 +3,7 @@ import { Client, writeTextToClipboard } from "./deps.ts";
 import { formatOFTMessage } from "./format.ts";
 import {
   extractFromTasks,
-  getCompletedOptions,
+  getPropsFromDB,
   getCompletedTasks,
 } from "./notion.ts";
 
@@ -13,14 +13,15 @@ async function generateMessage() {
   const {
     titleProp,
     statusProp: [statusPropKey, completedStatuses],
-  } = await getCompletedOptions(notion, databaseId);
+    linkProp,
+  } = await getPropsFromDB(notion, databaseId);
   const completedTasks = await getCompletedTasks(
     notion,
     databaseId,
     statusPropKey,
     completedStatuses
   );
-  const tasksMetadata = extractFromTasks(completedTasks, titleProp);
+  const tasksMetadata = extractFromTasks(completedTasks, titleProp, linkProp);
   const slackMsg = formatOFTMessage(tasksMetadata);
   console.log(slackMsg);
   writeTextToClipboard(slackMsg);
