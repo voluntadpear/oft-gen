@@ -1,7 +1,11 @@
 import type { Client } from "./deps.ts";
 import { assert, TaskMetadata } from "./types.ts";
 
-import type { PageObjectResponse, QueryDatabaseResponse } from "./deps.ts";
+import type {
+  PageObjectResponse,
+  QueryDatabaseResponse,
+  TextRichTextItemResponse,
+} from "./deps.ts";
 
 export async function getPropsFromDB(notion: Client, databaseId: string) {
   const db = await notion.databases.retrieve({ database_id: databaseId });
@@ -81,9 +85,10 @@ export function extractFromTasks(
 
     const nameProp = result.properties[titleProp];
     if (nameProp.type === "title") {
-      if (nameProp.title[0].type === "text") {
-        name = nameProp.title[0].text.content;
-      }
+      const textBlocks = nameProp.title.filter(
+        (block) => block.type === "text"
+      ) as TextRichTextItemResponse[];
+      name = textBlocks.map((block) => block.text.content).join("");
     }
 
     if (linkPropName) {
