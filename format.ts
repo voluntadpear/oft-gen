@@ -37,6 +37,7 @@ const originsMap: Record<string, Provider> = {
   "google.com": "Google Docs",
   "zendesk.com": "Zendesk",
   "notion.so": "Notion",
+  "slack.com": "Slack",
 };
 
 function categorizeItem(url: string): {
